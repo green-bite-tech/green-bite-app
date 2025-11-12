@@ -1,4 +1,12 @@
-import { Box, Flex, Heading, Table, Text } from "@radix-ui/themes";
+import {
+  Badge,
+  Box,
+  Flex,
+  Heading,
+  Table,
+  Text,
+  Tooltip,
+} from "@radix-ui/themes";
 import { DotLottieReact } from "@lottiefiles/dotlottie-react";
 import { ScanResult } from "@/modal/food";
 
@@ -30,6 +38,7 @@ export const Results = ({ scanResult, isLoading = false }: ResultsProps) => {
                   Estimated Weight
                 </Table.ColumnHeaderCell>
                 <Table.ColumnHeaderCell>Total kg CO₂e</Table.ColumnHeaderCell>
+                <Table.ColumnHeaderCell>Scan Confidence</Table.ColumnHeaderCell>
               </Table.Row>
             </Table.Header>
 
@@ -38,10 +47,47 @@ export const Results = ({ scanResult, isLoading = false }: ResultsProps) => {
                 .sort((a, b) => a.name.localeCompare(b.name))
                 .map((food, index) => (
                   <Table.Row key={index}>
-                    <Table.RowHeaderCell>{food.name}</Table.RowHeaderCell>
+                    <Table.RowHeaderCell>
+                      <Text size="2" weight="bold">
+                        {food.name}
+                      </Text>
+                      <br />
+                      <Text size="2" color="gray">
+                        {food.category}
+                      </Text>
+                    </Table.RowHeaderCell>
                     <Table.Cell>{food.estimatedWeight} kg</Table.Cell>
                     <Table.Cell>
-                      {food.totalCo2 ? `${food.totalCo2.toFixed(2)} kg` : "-"}
+                      <Tooltip
+                        content="High carbon footprint! Think about replacing this ingredient next time with a more sustainable option."
+                        hidden={food.totalCo2 <= food.estimatedWeight * 2}
+                      >
+                        <Badge
+                          size="3"
+                          color={
+                            food.totalCo2 > food.estimatedWeight * 2
+                              ? "red"
+                              : "green"
+                          }
+                        >
+                          {food.totalCo2
+                            ? `${food.totalCo2.toFixed(2)} kg`
+                            : "-"}
+                        </Badge>
+                      </Tooltip>
+                    </Table.Cell>
+                    <Table.Cell>
+                      <Tooltip
+                        content={"Low confidence - results may be inaccurate."}
+                        hidden={food.confidence > 0.8}
+                      >
+                        <Badge
+                          size="3"
+                          color={food.confidence > 0.8 ? "green" : "orange"}
+                        >
+                          {(food.confidence * 100).toFixed(0)}%
+                        </Badge>
+                      </Tooltip>
                     </Table.Cell>
                   </Table.Row>
                 ))}

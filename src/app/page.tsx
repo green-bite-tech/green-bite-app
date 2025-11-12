@@ -20,12 +20,20 @@ export default function Home() {
       pb="9"
     >
       <Heading size="9" align="center" as="h1">
-        Welcome to GreenBite App!
+        GreenBite
       </Heading>
 
       <Heading size="6" align="center" as="h2" mt="6">
         Track your carbon footprint in food with ease.
       </Heading>
+
+      <Box
+        width="80px"
+        height="8px"
+        mx="auto"
+        mt="6"
+        style={{ backgroundColor: "var(--crimson-9)", borderRadius: "8px" }}
+      ></Box>
 
       <Flex
         justify="center"
@@ -69,6 +77,7 @@ export default function Home() {
                 setScanResult(await res.json());
                 setIsLoading(false);
               }}
+              style={{ cursor: image ? "pointer" : "not-allowed" }}
             >
               Get carbon footprint
             </Button>

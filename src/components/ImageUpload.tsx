@@ -42,11 +42,10 @@ export default function ImageUpload({ onUpload, onClear }: ImageUpload) {
           <IconButton
             style={{
               position: "absolute",
-              right: "-38px",
+              right: "-40px",
               top: "0",
               cursor: "pointer",
             }}
-            variant="outline"
             aria-label="Clear"
             onClick={() => {
               setFiles([]);

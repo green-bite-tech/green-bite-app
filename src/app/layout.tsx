@@ -15,7 +15,7 @@ export default function RootLayout({
   return (
     <html lang="en">
       <body style={{ margin: 0, padding: 0 }}>
-        <Theme>{children}</Theme>
+        <Theme accentColor="crimson">{children}</Theme>
       </body>
     </html>
   );
