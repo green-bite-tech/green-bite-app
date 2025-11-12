@@ -1,10 +1,11 @@
 "use client";
 
+import ImageUpload from "@/components/ImageUpload";
+import { Results } from "@/components/Results";
+import { API_BASE_URL } from "@/constants/api";
+import { ScanResult } from "@/modal/food";
 import { Box, Button, Flex, Heading, Tooltip } from "@radix-ui/themes";
-import ImageUpload from "./components/ImageUpload";
 import { useState } from "react";
-import { ScanResult } from "./modal/food";
-import { Results } from "./components/Results";
 
 export default function Home() {
   const [image, setImage] = useState<File | null>(null);
@@ -59,7 +60,7 @@ export default function Home() {
                 const formData = new FormData();
                 formData.append("image", image);
                 const res = await fetch(
-                  "http://localhost:3000/food-analyzer/scan-image",
+                  `${API_BASE_URL}/food-analyzer/scan-image`,
                   {
                     method: "POST",
                     body: formData,

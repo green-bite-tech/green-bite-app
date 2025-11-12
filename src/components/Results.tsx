@@ -1,6 +1,6 @@
 import { Box, Flex, Heading, Table, Text } from "@radix-ui/themes";
-import { ScanResult } from "../modal/food";
 import { DotLottieReact } from "@lottiefiles/dotlottie-react";
+import { ScanResult } from "@/modal/food";
 
 interface ResultsProps {
   scanResult: ScanResult | null;
