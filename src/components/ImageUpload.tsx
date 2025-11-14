@@ -1,6 +1,6 @@
 "use client";
 import { Cross1Icon } from "@radix-ui/react-icons";
-import { Box, Flex, IconButton, Text } from "@radix-ui/themes";
+import { Box, Button, Flex, Text } from "@radix-ui/themes";
 import Image from "next/image";
 import { useState } from "react";
 import { FileWithPath, useDropzone } from "react-dropzone";
@@ -39,11 +39,11 @@ export default function ImageUpload({ onUpload, onClear }: ImageUpload) {
               zIndex: -1,
             }}
           />
-          <IconButton
+          <Button
             style={{
               position: "absolute",
-              right: "-40px",
-              top: "0",
+              bottom: "-48px",
+              left: "0",
               cursor: "pointer",
             }}
             aria-label="Clear"
@@ -53,7 +53,8 @@ export default function ImageUpload({ onUpload, onClear }: ImageUpload) {
             }}
           >
             <Cross1Icon width="16" height="16" />
-          </IconButton>
+            Reset
+          </Button>
         </>
       ) : (
         <Flex

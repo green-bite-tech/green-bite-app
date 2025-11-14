@@ -12,12 +12,15 @@ export default function Home() {
   const [scanResult, setScanResult] = useState<AnalysisResult | null>(null);
   const [isLoading, setIsLoading] = useState<boolean>(false);
 
+  const layoutShift = !!isLoading || !!scanResult;
+  const isMobile = typeof window !== "undefined" && window.innerWidth < 1024;
+
   return (
     <Box
       style={{ background: "var(--gray-a2)" }}
       minHeight="100vh"
-      pt="9"
-      pb="9"
+      py="9"
+      px="4"
     >
       <Heading size="9" align="center" as="h1">
         GreenBite
@@ -38,51 +41,54 @@ export default function Home() {
       <Flex
         justify="center"
         gap="4"
-        direction="column"
-        align="center"
+        direction={isMobile ? "column" : "row"}
+        align={isMobile ? "center" : "start"}
         mt="9"
         mb="9"
       >
-        <Box width="500px" height="300px">
-          <ImageUpload
-            onUpload={(file) => setImage(file)}
-            onClear={() => {
-              setImage(null);
-              setScanResult(null);
-            }}
-          />
-        </Box>
-        {!scanResult && !isLoading && (
-          <Tooltip
-            content="Upload an image to calculate your carbon footprint"
-            side="top"
-            hidden={!!image}
-          >
-            <Button
-              disabled={!image}
-              onClick={async () => {
-                if (!image) return;
-
+        <Flex direction="column" align="end" gap="4">
+          <Box width={!layoutShift ? "600px" : "400px"} height="400px">
+            <ImageUpload
+              onUpload={(file) => setImage(file)}
+              onClear={() => {
+                setImage(null);
                 setScanResult(null);
-                setIsLoading(true);
-                const formData = new FormData();
-                formData.append("image", image);
-                const res = await fetch(
-                  `${API_BASE_URL}/food-analyzer/scan-image`,
-                  {
-                    method: "POST",
-                    body: formData,
-                  }
-                );
-                setScanResult(await res.json());
-                setIsLoading(false);
               }}
-              style={{ cursor: image ? "pointer" : "not-allowed" }}
+            />
+          </Box>
+          {!scanResult && !isLoading && (
+            <Tooltip
+              content="Upload an image to calculate your carbon footprint"
+              side="top"
+              hidden={!!image}
             >
-              Get carbon footprint
-            </Button>
-          </Tooltip>
-        )}
+              <Button
+                disabled={!image}
+                onClick={async () => {
+                  if (!image) return;
+
+                  setScanResult(null);
+                  setIsLoading(true);
+                  const formData = new FormData();
+                  formData.append("image", image);
+                  const res = await fetch(
+                    `${API_BASE_URL}/food-analyzer/scan-image`,
+                    {
+                      method: "POST",
+                      body: formData,
+                    }
+                  );
+                  setScanResult(await res.json());
+                  setIsLoading(false);
+                }}
+                style={{ cursor: image ? "pointer" : "not-allowed" }}
+              >
+                Get carbon footprint
+              </Button>
+            </Tooltip>
+          )}
+        </Flex>
+
         <Results scanResult={scanResult} isLoading={isLoading} />
       </Flex>
     </Box>
