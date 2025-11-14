@@ -3,13 +3,13 @@
 import ImageUpload from "@/components/ImageUpload";
 import { Results } from "@/components/Results";
 import { API_BASE_URL } from "@/constants/api";
-import { ScanResult } from "@/modal/food";
+import { AnalysisResult } from "@/modal/foodAnalyzer";
 import { Box, Button, Flex, Heading, Tooltip } from "@radix-ui/themes";
 import { useState } from "react";
 
 export default function Home() {
   const [image, setImage] = useState<File | null>(null);
-  const [scanResult, setScanResult] = useState<ScanResult | null>(null);
+  const [scanResult, setScanResult] = useState<AnalysisResult | null>(null);
   const [isLoading, setIsLoading] = useState<boolean>(false);
 
   return (

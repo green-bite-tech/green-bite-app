@@ -8,12 +8,16 @@ import {
   Tooltip,
 } from "@radix-ui/themes";
 import { DotLottieReact } from "@lottiefiles/dotlottie-react";
-import { ScanResult } from "@/modal/food";
+import { AnalysisResult } from "@/modal/foodAnalyzer";
+import getTotalCarbon from "@/utils/getTotalCarbon";
 
 interface ResultsProps {
-  scanResult: ScanResult | null;
+  scanResult: AnalysisResult | null;
   isLoading?: boolean;
 }
+
+const CARBON_PER_KG_THRESHOLD = 5; // kg CO2e per kg
+const CONFIDENCE_THRESHOLD = 0.8; // 80%
 
 export const Results = ({ scanResult, isLoading = false }: ResultsProps) => {
   if (!scanResult && !isLoading) return null;
@@ -56,34 +60,43 @@ export const Results = ({ scanResult, isLoading = false }: ResultsProps) => {
                         {food.category}
                       </Text>
                     </Table.RowHeaderCell>
-                    <Table.Cell>{food.estimatedWeight} kg</Table.Cell>
-                    <Table.Cell>
+                    <Table.Cell align="right">
+                      {food.estimatedWeight} kg
+                    </Table.Cell>
+                    <Table.Cell align="right">
                       <Tooltip
                         content="High carbon footprint! Think about replacing this ingredient next time with a more sustainable option."
-                        hidden={food.totalCo2 <= food.estimatedWeight * 2}
+                        hidden={
+                          (food.food?.co2PerKg || 0) < CARBON_PER_KG_THRESHOLD
+                        }
                       >
                         <Badge
                           size="3"
                           color={
-                            food.totalCo2 > food.estimatedWeight * 2
+                            (food.food?.co2PerKg || 0) >=
+                            CARBON_PER_KG_THRESHOLD
                               ? "red"
                               : "green"
                           }
                         >
-                          {food.totalCo2
-                            ? `${food.totalCo2.toFixed(2)} kg`
+                          {getTotalCarbon(food)
+                            ? `${getTotalCarbon(food).toFixed(2)} kg`
                             : "-"}
                         </Badge>
                       </Tooltip>
                     </Table.Cell>
-                    <Table.Cell>
+                    <Table.Cell align="right">
                       <Tooltip
                         content={"Low confidence - results may be inaccurate."}
-                        hidden={food.confidence > 0.8}
+                        hidden={food.confidence > CONFIDENCE_THRESHOLD}
                       >
                         <Badge
                           size="3"
-                          color={food.confidence > 0.8 ? "green" : "orange"}
+                          color={
+                            food.confidence > CONFIDENCE_THRESHOLD
+                              ? "green"
+                              : "orange"
+                          }
                         >
                           {(food.confidence * 100).toFixed(0)}%
                         </Badge>
@@ -97,11 +110,14 @@ export const Results = ({ scanResult, isLoading = false }: ResultsProps) => {
                   Total
                 </Table.ColumnHeaderCell>
 
-                <Table.ColumnHeaderCell>
+                <Table.ColumnHeaderCell align="right">
                   {scanResult.identifiedFoods
-                    .reduce((total, food) => total + (food.totalCo2 || 0), 0)
+                    .reduce((total, food) => total + getTotalCarbon(food), 0)
                     .toFixed(2)}{" "}
                   kg
+                </Table.ColumnHeaderCell>
+                <Table.ColumnHeaderCell align="right">
+                  {(scanResult.scanConfidence * 100).toFixed(0)}%
                 </Table.ColumnHeaderCell>
               </Table.Row>
             </Table.Body>

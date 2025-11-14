@@ -1,17 +1,23 @@
-export interface ScanResultFood {
-  name: string;
-  confidence: number;
-  estimatedWeight: number;
-  co2PerKg: number;
-  totalCo2: number;
-  category: string;
-  matchedFromDatabase?: boolean;
-  databaseId?: string;
+export enum FoodCategory {
+  SEAFOOD = "seafood",
+  MEAT = "meat",
+  VEGETABLE = "vegetable",
+  GRAIN = "grain",
+  FRUIT = "fruit",
+  LEGUME = "legume",
+  NUT = "nut",
+  OIL = "oil",
 }
 
-export interface ScanResult {
-  identifiedFoods: ScanResultFood[];
-  totalEstimatedCo2: number;
-  scanConfidence: number;
-  notes: string;
+export interface Food {
+  id: string;
+  name: string;
+  emoji: string;
+  co2PerKg: number;
+  landUse: number;
+  farmOperations: number;
+  processing: number;
+  transportation: number;
+  packaging: number;
+  category: FoodCategory;
 }
