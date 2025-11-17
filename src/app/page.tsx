@@ -78,8 +78,15 @@ export default function Home() {
                       body: formData,
                     }
                   );
-                  setScanResult(await res.json());
-                  setIsLoading(false);
+                  if (res.status === 201) {
+                    setScanResult(await res.json());
+                    setIsLoading(false);
+                  } else {
+                    alert(
+                      "Something went wrong while analyzing your image. Pls try again later."
+                    );
+                    setIsLoading(false);
+                  }
                 }}
                 style={{ cursor: image ? "pointer" : "not-allowed" }}
               >

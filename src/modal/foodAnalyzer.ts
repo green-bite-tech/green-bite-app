@@ -9,7 +9,7 @@ export interface IdentifiedFood {
 }
 
 export interface AnalysisResult {
-  identifiedFoods: IdentifiedFood[];
+  results: IdentifiedFood[];
   notes: string;
   scanConfidence: number;
   totalEstimatedCo2: number;

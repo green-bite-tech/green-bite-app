@@ -4,19 +4,26 @@ import {
   Checkbox,
   Flex,
   Heading,
+  HoverCard,
   Table,
   Text,
   Tooltip,
 } from "@radix-ui/themes";
 import { DotLottieReact } from "@lottiefiles/dotlottie-react";
 import { AnalysisResult } from "@/modal/foodAnalyzer";
-import getTotalCarbon from "@/utils/getTotalCarbon";
+import getAbsoluteCarbon from "@/utils/getAbsoluteCarbon";
 import { Food } from "@/modal/food";
 import { useEffect, useState } from "react";
 import { GetRecommendations } from "./GetRecommendations";
 import { RecommendationResult } from "@/modal/recommender";
-import { ArrowDownIcon, ArrowRightIcon } from "@radix-ui/react-icons";
+import {
+  ArrowDownIcon,
+  ArrowRightIcon,
+  InfoCircledIcon,
+} from "@radix-ui/react-icons";
 import { FoodDisplay } from "./FoodDisplay";
+import getTotalGreenHouseGasEmissionsPerKilogram from "@/utils/getTotalGreenHouseGasEmissionsPerKilogram";
+import { FoodDetail } from "./FoodDetail";
 
 interface ResultsProps {
   scanResult: AnalysisResult | null;
@@ -51,15 +58,15 @@ export const Results = ({ isLoading = false, scanResult }: ResultsProps) => {
     }
   };
 
-  const foodItems =
-    scanResult?.identifiedFoods.map((identifiedFood) => {
+  const results =
+    scanResult?.results.map((result) => {
       const alternativeFood = recommendation?.recommendations.find(
         (recommendation) =>
-          recommendation.originalFoodId === (identifiedFood.food?.id || "")
+          recommendation.originalFoodId === (result.food?.id || "")
       );
 
       return {
-        ...identifiedFood,
+        ...result,
         alternative: alternativeFood?.alternative.food
           ? alternativeFood.alternative.food
           : null,
@@ -87,35 +94,37 @@ export const Results = ({ isLoading = false, scanResult }: ResultsProps) => {
                 <Table.ColumnHeaderCell>Name</Table.ColumnHeaderCell>
                 <Table.ColumnHeaderCell>Weight</Table.ColumnHeaderCell>
                 <Table.ColumnHeaderCell>Total kg CO₂e</Table.ColumnHeaderCell>
-                <Table.ColumnHeaderCell>Scan Confidence</Table.ColumnHeaderCell>
+                <Table.ColumnHeaderCell />
               </Table.Row>
             </Table.Header>
 
             <Table.Body>
-              {foodItems
+              {results
                 .sort((a, b) => a.name.localeCompare(b.name))
-                .map((food, index) => (
+                .map((result, index) => (
                   <Table.Row key={index}>
                     {!recommendation && (
                       <Table.Cell style={{ verticalAlign: "middle" }}>
                         <Checkbox
                           size="1"
                           onCheckedChange={(state) =>
-                            onCheck(state as boolean, food.food)
+                            onCheck(state as boolean, result.food)
                           }
-                          checked={selectedFoods.includes(food.food?.id || "")}
-                          disabled={!food.food}
+                          checked={selectedFoods.includes(
+                            result.food?.id || ""
+                          )}
+                          disabled={!result.food}
                         />
                       </Table.Cell>
                     )}
                     <Table.RowHeaderCell>
-                      {food.food ? (
+                      {result.food ? (
                         <Flex direction="row" align="center" gap="2">
                           <FoodDisplay
-                            food={food.food}
-                            strikeThrough={!!food.alternative}
+                            food={result.food}
+                            strikeThrough={!!result.alternative}
                           />
-                          {food.alternative && (
+                          {result.alternative && (
                             <>
                               <Flex
                                 width="12px"
@@ -125,7 +134,7 @@ export const Results = ({ isLoading = false, scanResult }: ResultsProps) => {
                               >
                                 <ArrowRightIcon />
                               </Flex>
-                              <FoodDisplay food={food.alternative} />
+                              <FoodDisplay food={result.alternative} />
                             </>
                           )}
                         </Flex>
@@ -133,54 +142,79 @@ export const Results = ({ isLoading = false, scanResult }: ResultsProps) => {
                         <FoodDisplay
                           food={
                             {
-                              name: food.name,
-                              category: food.category,
+                              name: result.name,
+                              category: result.category,
                             } as Food
                           }
                         />
                       )}
                     </Table.RowHeaderCell>
                     <Table.Cell align="right">
-                      {food.estimatedWeight} kg
+                      <Flex direction="column" align="end" gap="1">
+                        <Text size="2" weight="bold">
+                          {result.estimatedWeight} kg
+                        </Text>
+                        <Tooltip
+                          content={
+                            result.confidence > CONFIDENCE_THRESHOLD
+                              ? "High scan confidence - results are likely accurate."
+                              : "Low scan confidence - results may be inaccurate."
+                          }
+                        >
+                          <Badge
+                            size="1"
+                            color={
+                              result.confidence > CONFIDENCE_THRESHOLD
+                                ? "green"
+                                : "orange"
+                            }
+                          >
+                            {(result.confidence * 100).toFixed(0)}%
+                          </Badge>
+                        </Tooltip>
+                      </Flex>
                     </Table.Cell>
                     <Table.Cell align="right">
                       <Flex
                         direction="column"
-                        align="center"
+                        align="end"
                         gap="2"
-                        justify="end"
+                        justify="center"
+                        height="100%"
                       >
                         <Tooltip
                           content="High carbon footprint! Think about replacing this ingredient next time with a more sustainable option."
                           hidden={
-                            (food.food?.co2PerKg || 0) <
-                              CARBON_PER_KG_THRESHOLD || !!food.alternative
+                            getTotalGreenHouseGasEmissionsPerKilogram(
+                              result.food
+                            ) < CARBON_PER_KG_THRESHOLD || !!result.alternative
                           }
                         >
                           <Badge
                             size="3"
                             color={
-                              (food.food?.co2PerKg || 0) >=
-                              CARBON_PER_KG_THRESHOLD
+                              getTotalGreenHouseGasEmissionsPerKilogram(
+                                result.food
+                              ) >= CARBON_PER_KG_THRESHOLD
                                 ? "red"
                                 : "green"
                             }
                             style={{
-                              textDecoration: food.alternative
+                              textDecoration: result.alternative
                                 ? "line-through"
                                 : "none",
                             }}
                           >
-                            {food.food
-                              ? `${getTotalCarbon(
-                                  food.food.co2PerKg,
-                                  food.estimatedWeight
+                            {result.food
+                              ? `${getAbsoluteCarbon(
+                                  result.estimatedWeight,
+                                  result.food
                                 ).toFixed(2)} kg`
                               : "-"}
                           </Badge>
                         </Tooltip>
 
-                        {food.alternative && (
+                        {result.alternative && (
                           <>
                             <Flex
                               width="12px"
@@ -191,9 +225,9 @@ export const Results = ({ isLoading = false, scanResult }: ResultsProps) => {
                               <ArrowDownIcon />
                             </Flex>
                             <Badge size="3" color="green">
-                              {getTotalCarbon(
-                                food.alternative.co2PerKg,
-                                food.estimatedWeight
+                              {getAbsoluteCarbon(
+                                result.estimatedWeight,
+                                result.alternative
                               ).toFixed(2)}{" "}
                               kg
                             </Badge>
@@ -201,22 +235,22 @@ export const Results = ({ isLoading = false, scanResult }: ResultsProps) => {
                         )}
                       </Flex>
                     </Table.Cell>
-                    <Table.Cell align="right">
-                      <Tooltip
-                        content={"Low confidence - results may be inaccurate."}
-                        hidden={food.confidence > CONFIDENCE_THRESHOLD}
-                      >
-                        <Badge
-                          size="3"
-                          color={
-                            food.confidence > CONFIDENCE_THRESHOLD
-                              ? "green"
-                              : "orange"
-                          }
-                        >
-                          {(food.confidence * 100).toFixed(0)}%
-                        </Badge>
-                      </Tooltip>
+                    <Table.Cell justify="end">
+                      <Flex height="100%" align="center" justify="end">
+                        {result.food && (
+                          <HoverCard.Root>
+                            <HoverCard.Trigger>
+                              <InfoCircledIcon width="18" height="18" />
+                            </HoverCard.Trigger>
+                            <HoverCard.Content maxWidth="600px">
+                              <FoodDetail
+                                originalFood={result.food}
+                                alternativeFood={result.alternative}
+                              />
+                            </HoverCard.Content>
+                          </HoverCard.Root>
+                        )}
+                      </Flex>
                     </Table.Cell>
                   </Table.Row>
                 ))}
@@ -228,14 +262,11 @@ export const Results = ({ isLoading = false, scanResult }: ResultsProps) => {
                 </Table.ColumnHeaderCell>
 
                 <Table.ColumnHeaderCell align="right">
-                  {scanResult.identifiedFoods
+                  {scanResult.results
                     .reduce(
-                      (total, food) =>
+                      (total, result) =>
                         total +
-                        getTotalCarbon(
-                          food.food?.co2PerKg || 0,
-                          food.estimatedWeight
-                        ),
+                        getAbsoluteCarbon(result.estimatedWeight, result.food),
                       0
                     )
                     .toFixed(2)}{" "}
@@ -250,8 +281,8 @@ export const Results = ({ isLoading = false, scanResult }: ResultsProps) => {
 
           <GetRecommendations
             selectedFoods={selectedFoods}
-            originalFoodIds={scanResult.identifiedFoods
-              .map((food) => food.food?.id || "")
+            originalFoodIds={scanResult.results
+              .map((result) => result.food?.id || "")
               .filter((id) => id !== "")}
             recommendation={recommendation}
             onLoad={setRecommendation}
