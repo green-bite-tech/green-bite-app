@@ -53,7 +53,7 @@ export default function ImageUpload({ onUpload, onClear }: ImageUpload) {
             }}
           >
             <Cross1Icon width="16" height="16" />
-            Reset
+            Upload new image
           </Button>
         </>
       ) : (
