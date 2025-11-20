@@ -89,10 +89,10 @@ export const FoodDetail = ({
       <Tabs.Root defaultValue="greenhouseGasEmissionsPerKilogram">
         <Tabs.List size="1">
           <Tabs.Trigger value="greenhouseGasEmissionsPerKilogram">
-            Greenhouse Gas Emissions per Kilogram
+            Greenhouse Gas Emissions (per kg)
           </Tabs.Trigger>
-          <Tabs.Trigger value="waterUse">Water Use</Tabs.Trigger>
-          <Tabs.Trigger value="landUse">Land Use</Tabs.Trigger>
+          <Tabs.Trigger value="waterUse">Water Use (per kg)</Tabs.Trigger>
+          <Tabs.Trigger value="landUse">Land Use (per kg)</Tabs.Trigger>
         </Tabs.List>
 
         <Box pt="3">
