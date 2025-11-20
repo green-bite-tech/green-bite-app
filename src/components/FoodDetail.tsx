@@ -1,4 +1,5 @@
 import { Food } from "@/modal/food";
+import formatNumber from "@/utils/formatNumber";
 import { Box, DataList, Heading, Tabs } from "@radix-ui/themes";
 import {
   Bar,
@@ -150,21 +151,25 @@ export const FoodDetail = ({
               <DataList.Item>
                 <DataList.Label>Per Kilogram</DataList.Label>
                 <DataList.Value>
-                  {originalFood.waterUsePerKilogram?.toFixed(2)} L/kg
+                  {formatNumber(originalFood.waterUsePerKilogram, "L/kg")}
                 </DataList.Value>
               </DataList.Item>
               <DataList.Item>
                 <DataList.Label>Per 1000 Kilocalories</DataList.Label>
                 <DataList.Value>
-                  {originalFood.waterUsePer1000Kilocalories?.toFixed(2)} L/1000
-                  kcal
+                  {formatNumber(
+                    originalFood.waterUsePer1000Kilocalories,
+                    "L/1000 kcal"
+                  )}
                 </DataList.Value>
               </DataList.Item>
               <DataList.Item>
                 <DataList.Label>Per 100 Grams of Protein</DataList.Label>
                 <DataList.Value>
-                  {originalFood.waterUsePer100GramsOfProtein?.toFixed(2)} L/100
-                  g
+                  {formatNumber(
+                    originalFood.waterUsePer100GramsOfProtein,
+                    "L/100 g"
+                  )}
                 </DataList.Value>
               </DataList.Item>
             </DataList.Root>
@@ -178,21 +183,28 @@ export const FoodDetail = ({
                   <DataList.Item>
                     <DataList.Label>Per Kilogram</DataList.Label>
                     <DataList.Value>
-                      {alternativeFood.waterUsePerKilogram?.toFixed(2)} L/kg
+                      {formatNumber(
+                        alternativeFood.waterUsePerKilogram,
+                        "L/kg"
+                      )}
                     </DataList.Value>
                   </DataList.Item>
                   <DataList.Item>
                     <DataList.Label>Per 1000 Kilocalories</DataList.Label>
                     <DataList.Value>
-                      {alternativeFood.waterUsePer1000Kilocalories?.toFixed(2)}{" "}
-                      L/1000 kcal
+                      {formatNumber(
+                        alternativeFood.waterUsePer1000Kilocalories,
+                        "L/1000 kcal"
+                      )}
                     </DataList.Value>
                   </DataList.Item>
                   <DataList.Item>
                     <DataList.Label>Per 100 Grams of Protein</DataList.Label>
                     <DataList.Value>
-                      {alternativeFood.waterUsePer100GramsOfProtein?.toFixed(2)}{" "}
-                      L/100 g
+                      {formatNumber(
+                        alternativeFood.waterUsePer100GramsOfProtein,
+                        "L/100 g"
+                      )}
                     </DataList.Value>
                   </DataList.Item>
                 </DataList.Root>
@@ -208,21 +220,25 @@ export const FoodDetail = ({
               <DataList.Item>
                 <DataList.Label>Per Kilogram</DataList.Label>
                 <DataList.Value>
-                  {originalFood.landUsePerKilogram?.toFixed(2) || "-"} m²/kg
+                  {formatNumber(originalFood.landUsePerKilogram, "m²/kg")}
                 </DataList.Value>
               </DataList.Item>
               <DataList.Item>
                 <DataList.Label>Per 1000 Kilocalories</DataList.Label>
                 <DataList.Value>
-                  {originalFood.landUsePer1000Kilocalories?.toFixed(2) || "-"}{" "}
-                  m²/1000 kcal
+                  {formatNumber(
+                    originalFood.landUsePer1000Kilocalories,
+                    "m²/1000 kcal"
+                  )}
                 </DataList.Value>
               </DataList.Item>
               <DataList.Item>
                 <DataList.Label>Per 100 Grams of Protein</DataList.Label>
                 <DataList.Value>
-                  {originalFood.landUsePer100GramsOfProtein?.toFixed(2) || "-"}{" "}
-                  m²/100 g
+                  {formatNumber(
+                    originalFood.landUsePer100GramsOfProtein,
+                    "m²/100 g"
+                  )}
                 </DataList.Value>
               </DataList.Item>
             </DataList.Root>
@@ -236,25 +252,28 @@ export const FoodDetail = ({
                   <DataList.Item>
                     <DataList.Label>Per Kilogram</DataList.Label>
                     <DataList.Value>
-                      {alternativeFood.landUsePerKilogram?.toFixed(2) || "-"}{" "}
-                      m²/kg
+                      {formatNumber(
+                        alternativeFood.landUsePerKilogram,
+                        "m²/kg"
+                      )}
                     </DataList.Value>
                   </DataList.Item>
                   <DataList.Item>
                     <DataList.Label>Per 1000 Kilocalories</DataList.Label>
                     <DataList.Value>
-                      {alternativeFood.landUsePer1000Kilocalories?.toFixed(2) ||
-                        "-"}{" "}
-                      m²/1000 kcal
+                      {formatNumber(
+                        alternativeFood.landUsePer1000Kilocalories,
+                        "m²/1000 kcal"
+                      )}
                     </DataList.Value>
                   </DataList.Item>
                   <DataList.Item>
                     <DataList.Label>Per 100 Grams of Protein</DataList.Label>
                     <DataList.Value>
-                      {alternativeFood.landUsePer100GramsOfProtein?.toFixed(
-                        2
-                      ) || "-"}{" "}
-                      m²/100 g
+                      {formatNumber(
+                        alternativeFood.landUsePer100GramsOfProtein,
+                        "m²/100 g"
+                      )}
                     </DataList.Value>
                   </DataList.Item>
                 </DataList.Root>

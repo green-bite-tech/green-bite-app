@@ -24,6 +24,7 @@ import {
 import { FoodDisplay } from "./FoodDisplay";
 import getTotalGreenHouseGasEmissionsPerKilogram from "@/utils/getTotalGreenHouseGasEmissionsPerKilogram";
 import { FoodDetail } from "./FoodDetail";
+import formatNumber from "@/utils/formatNumber";
 
 interface ResultsProps {
   scanResult: AnalysisResult | null;
@@ -152,7 +153,7 @@ export const Results = ({ isLoading = false, scanResult }: ResultsProps) => {
                     <Table.Cell align="right">
                       <Flex direction="column" align="end" gap="1">
                         <Text size="2" weight="bold">
-                          {result.estimatedWeight} kg
+                          {formatNumber(result.estimatedWeight, "kg")}
                         </Text>
                         <Tooltip
                           content={
@@ -177,7 +178,7 @@ export const Results = ({ isLoading = false, scanResult }: ResultsProps) => {
                     <Table.Cell align="right">
                       <Flex
                         direction="column"
-                        align="end"
+                        align="center"
                         gap="2"
                         justify="center"
                         height="100%"
@@ -205,12 +206,13 @@ export const Results = ({ isLoading = false, scanResult }: ResultsProps) => {
                                 : "none",
                             }}
                           >
-                            {result.food
-                              ? `${getAbsoluteCarbon(
-                                  result.estimatedWeight,
-                                  result.food
-                                ).toFixed(2)} kg`
-                              : "-"}
+                            {formatNumber(
+                              getAbsoluteCarbon(
+                                result.estimatedWeight,
+                                result.food
+                              ),
+                              "kg"
+                            )}
                           </Badge>
                         </Tooltip>
 
@@ -225,11 +227,13 @@ export const Results = ({ isLoading = false, scanResult }: ResultsProps) => {
                               <ArrowDownIcon />
                             </Flex>
                             <Badge size="3" color="green">
-                              {getAbsoluteCarbon(
-                                result.estimatedWeight,
-                                result.alternative
-                              ).toFixed(2)}{" "}
-                              kg
+                              {formatNumber(
+                                getAbsoluteCarbon(
+                                  result.estimatedWeight,
+                                  result.alternative
+                                ),
+                                "kg"
+                              )}
                             </Badge>
                           </>
                         )}
@@ -261,20 +265,61 @@ export const Results = ({ isLoading = false, scanResult }: ResultsProps) => {
                   Total
                 </Table.ColumnHeaderCell>
 
-                <Table.ColumnHeaderCell align="right">
-                  {scanResult.results
-                    .reduce(
-                      (total, result) =>
-                        total +
-                        getAbsoluteCarbon(result.estimatedWeight, result.food),
-                      0
-                    )
-                    .toFixed(2)}{" "}
-                  kg
+                <Table.ColumnHeaderCell align="center">
+                  <Flex
+                    direction="column"
+                    align="center"
+                    gap="2"
+                    justify="center"
+                    height="100%"
+                  >
+                    <Badge size="3">
+                      {formatNumber(
+                        results.reduce(
+                          (total, result) =>
+                            total +
+                            getAbsoluteCarbon(
+                              result.estimatedWeight,
+                              result.food
+                            ),
+                          0
+                        ),
+                        "kg"
+                      )}
+                    </Badge>
+
+                    {results.some((result) => result.alternative) && (
+                      <>
+                        <Flex
+                          width="12px"
+                          height="12px"
+                          justify="center"
+                          align="center"
+                        >
+                          <ArrowDownIcon />
+                        </Flex>
+                        <Badge size="3" color="green">
+                          {formatNumber(
+                            results.reduce((total, result) => {
+                              const foodToUse = result.alternative
+                                ? result.alternative
+                                : result.food;
+                              return (
+                                total +
+                                getAbsoluteCarbon(
+                                  result.estimatedWeight,
+                                  foodToUse
+                                )
+                              );
+                            }, 0),
+                            "kg"
+                          )}
+                        </Badge>
+                      </>
+                    )}
+                  </Flex>
                 </Table.ColumnHeaderCell>
-                <Table.ColumnHeaderCell align="right">
-                  {(scanResult.scanConfidence * 100).toFixed(0)}%
-                </Table.ColumnHeaderCell>
+                <Table.ColumnHeaderCell />
               </Table.Row>
             </Table.Body>
           </Table.Root>
